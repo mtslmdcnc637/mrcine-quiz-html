@@ -671,9 +671,17 @@ function calculateScore(a){
 var SUPABASE_URL='https://ddrxijoetflsyumjoedv.supabase.co';
 var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkcnhpam9ldGZsc3l1bWpvZWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3MzQ5NTcsImV4cCI6MjA5MDMxMDk1N30.AVk10BNz6CiODR1pLXh437Cns989_xjUKHkxieoI1Z8';
 var _submissionId='';
-function trackEvent(event,data){
-  if(!_submissionId){ _submissionId='sub_'+Date.now()+'_'+Math.random().toString(36).slice(2,8); }
-  fetch(SUPABASE_URL+'/rest/v1/quiz_events',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY},body:JSON.stringify({submission_id:_submissionId,event:event,data:data||{},created_at:new Date().toISOString()})}).catch(function(){});
+function getSubId(){
+  if(_submissionId) return _submissionId;
+  try {
+    _submissionId=localStorage.getItem('mrcine_sub');
+    if(!_submissionId){ _submissionId=crypto.randomUUID?crypto.randomUUID():'sub_'+Date.now()+'_'+Math.random().toString(36).slice(2,8); localStorage.setItem('mrcine_sub',_submissionId); }
+  }catch(e){ _submissionId='sub_'+Date.now()+'_'+Math.random().toString(36).slice(2,8); }
+  return _submissionId;
+}
+function upsertResponse(data){
+  data.submission_id=getSubId();
+  fetch(SUPABASE_URL+'/rest/v1/quiz_responses',{method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'resolution=merge-duplicates'},body:JSON.stringify(data)}).catch(function(){});
 }
 
 window.quiz = {
@@ -685,7 +693,7 @@ window.quiz = {
     this.answers={}; this.qIndex=0;
     showScreen('screen-questions');
     this.renderQuestion();
-    trackEvent('quiz_start',{});
+    upsertResponse({name:null,email:null,whatsapp:null,profile_type:null,answers:{},last_step:0,completed:false});
     if(typeof ttq!=='undefined') ttq.track('InitiateCheckout');
     if(typeof gtag!=='undefined') gtag('event','quiz_start');
   },
@@ -781,7 +789,7 @@ window.quiz = {
       }
       this.answers[q.id]=val;
     }
-    trackEvent('question_answered',{q_id:q.id,q_index:this.qIndex,answer:this.answers[q.id]});
+    upsertResponse({answers:this.answers,last_step:this.qIndex+1});
     if(this.isNextDisabled()) return;
     if(this.qIndex<QUESTIONS.length-1){
       this.qIndex++;
@@ -838,7 +846,7 @@ showResult: function(){
     var prof=calculateProfile(this.answers);
     var score=calculateScore(this.answers);
     showScreen('screen-result');
-    trackEvent('quiz_complete',{profile:prof.name,score:score});
+    upsertResponse({profile_type:prof.name,answers:this.answers,completed:true,last_step:QUESTIONS.length});
     if(typeof ttq!=='undefined') ttq.track('CompletePayment');
     if(typeof gtag!=='undefined') gtag('event','quiz_complete');
   },
@@ -846,7 +854,7 @@ showResult: function(){
 goPricing: function(){
     showScreen('screen-pricing');
     this.renderPricing();
-    trackEvent('pricing_view',{plan:this.selectedPlan});
+    upsertResponse({last_step:QUESTIONS.length+1});
     if(typeof ttq!=='undefined') ttq.track('ViewContent');
   },
 
@@ -878,7 +886,7 @@ goPricing: function(){
   },
 
   subscribe: function(){
-    trackEvent('subscribe_click',{plan:this.selectedPlan,email:this.answers.email||'',name:this.answers.name||''});
+    upsertResponse({name:this.answers.name||null,email:this.answers.email||null,whatsapp:this.answers.whatsapp||null,last_step:99});
     if(typeof ttq!=='undefined') ttq.track('Subscribe');
     if(typeof gtag!=='undefined') gtag('event','subscribe');
     window.location.href='https://mrcine.pro/pricing?plan='+this.selectedPlan+'&email='+encodeURIComponent(this.answers.email||'')+'&name='+encodeURIComponent(this.answers.name||'');
@@ -888,7 +896,7 @@ goPricing: function(){
     $('screen-browser-tip').classList.remove('active');
     $('screen-browser-tip').style.display='none';
     showScreen('screen-start');
-    trackEvent('browser_tip_dismissed',{});
+    upsertResponse({last_step:-1});
   }
 };
 
@@ -899,7 +907,7 @@ var isInApp=/TikTok|Instagram|FB_IAB|FBAN|FBAV|Twitter|Snapchat|WeChat|Line|What
 if(isInApp){
   $('screen-browser-tip').style.display='flex';
   $('screen-browser-tip').classList.add('active');
-  trackEvent('browser_tip_shown',{ua:ua});
+  upsertResponse({last_step:-2});
 } else {
   showScreen('screen-start');
 }
