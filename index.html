@@ -371,7 +371,7 @@ body::before{
     <div class="pains" id="pains"></div>
 
     <button class="cta w-full anim-fade-up" onclick="quiz.goPricing()" ontouchend="event.preventDefault();quiz.goPricing()">
-      Desbloquear Meu Perfil Completo <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      Descobrir os Filmes Perfeitos para o Meu Perfil <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
     </button>
     <p style="text-align:center;color:var(--text-muted);font-size:0.75rem;margin-top:0.75rem">Junte-se a mais de 2.000 cinéfilos que já pararam de perder tempo escolhendo filme</p>
   </div>
@@ -650,13 +650,13 @@ window.quiz = {
     if(q.type==='input'){
       var isWA=q.id==='whatsapp';
       html+='<div class="q-input-wrap">';
-      html+='<input class="q-input" id="q-input" type="'+(q.id==='email'?'email':isWA?'tel':'text')+'" placeholder="'+q.placeholder+'" value="'+(isWA?(curAns?formatWhatsApp(curAns+'').formatted:''):(curAns||''))+'" autocomplete="off" autofocus onkeydown="if(event.key===\'Enter\')quiz.goNext()">';
+      html+='<input class="q-input" id="q-input" type="'+(q.id==='email'?'email':isWA?'tel':'text')+'" placeholder="'+q.placeholder+'" value="'+(isWA?(curAns?formatWhatsApp(curAns+'').formatted:''):(curAns||''))+'" autocomplete="off" autofocus onkeydown="if(event.key===\'Enter\')quiz.goNext()" oninput="quiz.updateNav()">';
       html+='</div>';
     } else {
       html+='<div class="options">';
       q.options.forEach(function(o){
         var sel=q.type==='multiple'?((curAns||[]).indexOf(o.id)>=0):curAns===o.id;
-        html+='<div class="option'+(sel?' selected':'')+'" onclick="quiz.selectOption(\''+o.id+'\')" ontouchend="event.preventDefault();quiz.selectOption(\''+o.id+'\')">';
+        html+='<div class="option'+(sel?' selected':'')+'" data-oid="'+o.id+'" onclick="quiz.selectOption(\''+o.id+'\')" ontouchend="event.preventDefault();quiz.selectOption(\''+o.id+'\')">';
         if(o.icon) html+='<span class="option-icon">'+o.icon+'</span>';
         html+='<span class="option-label">'+o.label+'</span>';
         html+='<div class="option-radio"></div></div>';
@@ -666,19 +666,10 @@ window.quiz = {
 
     $('question-card').innerHTML=html;
 
-    // Nav
-    var nav='';
-    if(q.type!=='single'){
-      var disabled=this.isNextDisabled();
-      nav+='<button class="cta w-full" '+(disabled?'disabled aria-disabled="true"':'onclick="quiz.goNext()" ontouchend="event.preventDefault();quiz.goNext()"')+'>Continuar</button>';
-      if(this.qIndex>0){
-        nav+='<button class="back-btn" onclick="quiz.goBack()" ontouchend="event.preventDefault();quiz.goBack()">← Voltar</button>';
-      }
-    }
-    $('question-nav').innerHTML=nav;
+    // Nav — updateNav reads current state from DOM
+    this.updateNav();
     $('question-card').className='q-card anim-fade-right';
 
-    // Re-render animation class
     setTimeout(function(){$('question-card').className='q-card';},300);
   },
 
@@ -692,8 +683,26 @@ window.quiz = {
       var idx=cur.indexOf(id);
       if(idx>=0) cur.splice(idx,1); else cur.push(id);
       this.answers[q.id]=cur;
-      this.renderQuestion();
+      // Toggle visual without full re-render (avoid flicker)
+      var el=$('question-card').querySelector('.option[data-oid="'+id+'"]');
+      if(el){
+        if(idx>=0) el.classList.remove('selected'); else el.classList.add('selected');
+      }
+      this.updateNav();
     }
+  },
+
+  updateNav: function(){
+    var q=QUESTIONS[this.qIndex];
+    var nav='';
+    if(q.type!=='single'){
+      var disabled=this.isNextDisabled();
+      nav+='<button class="cta w-full" '+(disabled?'disabled aria-disabled="true"':'onclick="quiz.goNext()" ontouchend="event.preventDefault();quiz.goNext()"')+'>Continuar</button>';
+      if(this.qIndex>0){
+        nav+='<button class="back-btn" onclick="quiz.goBack()" ontouchend="event.preventDefault();quiz.goBack()">← Voltar</button>';
+      }
+    }
+    $('question-nav').innerHTML=nav;
   },
 
   goNext: function(){
