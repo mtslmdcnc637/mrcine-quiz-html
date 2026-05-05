@@ -768,6 +768,12 @@ window.quiz = {
 
   updateNav: function(){
     var q=QUESTIONS[this.qIndex];
+    if(q.id==='whatsapp'){
+      var wi=$('q-input'); if(wi){
+        var wf=formatWhatsApp(wi.value);
+        if(wf.digits.length>0) wi.value=wf.formatted;
+      }
+    }
     var nav='';
     if(q.type!=='single'){
       var disabled=this.isNextDisabled();
