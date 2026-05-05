@@ -850,7 +850,7 @@ window.quiz = {
   subscribe: function(){
     if(typeof ttq!=='undefined') ttq.track('Subscribe');
     if(typeof gtag!=='undefined') gtag('event','subscribe');
-    window.location.href='https://mrcine.pro/signup?plan='+this.selectedPlan+'&email='+encodeURIComponent(this.answers.email||'');
+    window.location.href='https://mrcine.pro/pricing?plan='+this.selectedPlan+'&email='+encodeURIComponent(this.answers.email||'')+'&name='+encodeURIComponent(this.answers.name||'');
   }
 };
 
