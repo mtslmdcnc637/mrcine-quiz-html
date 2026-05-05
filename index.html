@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Descubra seu Perfil Cinematográfico. Quiz gratuito - MrCine PRO">
+<meta name="theme-color" content="#0a0a0b">
+<meta name="color-scheme" content="dark">
+<title>Quiz — MrCine PRO</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d4a853' stroke-width='2'%3E%3Crect width='18' height='18' x='3' y='3' rx='2'/%3E%3Cline x1='7' x2='7' y1='3' y2='21'/%3E%3Cline x1='17' x2='17' y1='3' y2='21'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0b;--surface:#141416;--surface2:#1c1c20;--surface3:#242428;
+  --accent:#d4a853;--accent-dim:rgba(212,168,83,0.15);--accent-glow:rgba(212,168,83,0.3);
+  --danger:#c75050;--danger-dim:rgba(199,80,80,0.12);
+  --success:#5aad6e;--success-dim:rgba(90,173,110,0.12);
+  --text:#f0ece4;--text-secondary:#a09a90;--text-muted:#5a5650;
+  --border:rgba(255,255,255,0.06);--radius:16px;--radius-sm:10px;
+  --ease:cubic-bezier(0.4,0,0.2,1);
+}
+html{scroll-behavior:smooth;font-size:16px;-webkit-tap-highlight-color:rgba(212,168,83,0.3)}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;min-height:100dvh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(212,168,83,0.05),transparent),
+             radial-gradient(ellipse 60% 80% at 80% 90%,rgba(212,168,83,0.03),transparent);
+}
+::selection{background:var(--accent-dim)}
+
+.app{position:relative;z-index:1;max-width:42rem;margin:0 auto;padding:1rem 1rem 2rem;min-height:100dvh;display:flex;flex-direction:column}
+
+/* Header */
+.header{display:flex;justify-content:center;margin-bottom:2rem}
+.header-inner{display:flex;align-items:center;gap:0.5rem}
+.header-icon{width:24px;height:24px;color:var(--accent);flex-shrink:0}
+.header-text{font-size:1.25rem;font-weight:700;letter-spacing:-0.025em}
+.header-text span{color:var(--accent)}
+
+/* Screen switching */
+.screen{display:none}
+.screen.active{display:flex;flex:1;flex-direction:column}
+.screen.start{display:none}
+.screen.start.active{display:flex;align-items:center;justify-content:flex-start;text-align:center;margin-top:2rem}
+
+/* Start Screen */
+.start-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 1rem;border-radius:9999px;background:var(--accent-dim);color:var(--accent);font-size:0.7rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;border:1px solid rgba(212,168,83,0.2);font-family:'JetBrains Mono',monospace;margin-bottom:1.5rem}
+.start-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s ease infinite}
+.start-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.75rem,5vw,3rem);font-weight:300;line-height:1.1;margin-bottom:1rem}
+.start-subtitle{color:var(--text-secondary);font-size:1rem;line-height:1.7;margin-bottom:1.5rem;max-width:28rem;margin-left:auto;margin-right:auto}
+.start-subtitle em{font-style:italic;font-weight:400;background:linear-gradient(135deg,var(--accent),#e8c46e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.start-benefits{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;max-width:28rem;text-align:left;margin-bottom:1.5rem}
+.start-benefits p{color:var(--text-secondary);font-size:0.9rem;font-weight:500;margin-bottom:0.75rem}
+.start-benefits ul{list-style:none;display:flex;flex-direction:column;gap:0.625rem}
+.start-benefits li{display:flex;align-items:flex-start;gap:0.625rem;font-size:0.875rem;line-height:1.5}
+.start-benefits li .check{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;margin-top:1px}
+.start-benefits li .check svg{width:12px;height:12px;color:var(--accent)}
+
+.start-trust{display:inline-flex;align-items:center;gap:0.5rem;padding:0.625rem 1rem;border-radius:var(--radius-sm);background:var(--success-dim);border:1px solid rgba(90,173,110,0.2);color:var(--success);font-size:0.875rem;font-weight:500;margin-bottom:2rem}
+.start-trust svg{width:16px;height:16px}
+.start-meta{display:flex;gap:1.5rem;margin-bottom:2rem;font-size:0.875rem;color:var(--text-muted)}
+.start-meta span{display:flex;align-items:center;gap:0.5rem}
+.start-meta svg{width:16px;height:16px;color:var(--accent);stroke-width:1.5}
+
+/* Testimonials */
+.testimonials{width:100%;max-width:28rem;text-align:left;margin-bottom:1.5rem}
+.testimonials-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.1em;font-weight:700;margin-bottom:0.75rem;text-align:center}
+.testimonial{background:var(--surface);border:1px solid var(--border);padding:1rem;border-radius:var(--radius);margin-bottom:0.75rem}
+.testimonial-header{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem}
+.testimonial-avatar{width:32px;height:32px;border-radius:50%;object-fit:cover;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;color:var(--accent);flex-shrink:0}
+.testimonial-name{font-weight:700;font-size:0.8rem}
+.testimonial-stars{display:flex;color:var(--accent);gap:1px}
+.testimonial-stars svg{width:12px;height:12px}
+.testimonial-text{color:var(--text-secondary);font-size:0.8rem;font-style:italic;line-height:1.5}
+
+/* Disclaimer */
+.disclaimer{font-size:0.65rem;color:var(--text-muted);text-align:center;max-width:24rem;line-height:1.5;margin-top:1rem}
+
+/* CTA Button */
+.cta{
+  display:inline-flex;align-items:center;justify-content:center;gap:0.625rem;
+  padding:1.125rem 2.5rem;border:none;border-radius:var(--radius-sm);
+  background:linear-gradient(135deg,var(--accent) 0%,#c49a3e 100%);
+  color:var(--bg);font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;
+  letter-spacing:0.03em;cursor:pointer;transition:all 0.3s var(--ease);
+  position:relative;overflow:hidden;touch-action:manipulation;
+  -webkit-appearance:none;-webkit-tap-highlight-color:rgba(212,168,83,0.3);
+}
+.cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,168,83,0.3)}
+.cta:active{transform:translateY(0)}
+.cta.w-full{width:100%}
+.cta:disabled,.cta[aria-disabled=true]{opacity:0.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+.cta-inner{display:flex;align-items:center;gap:0.5rem}
+
+/* Progress Bar */
+.progress-wrap{margin-bottom:2rem}
+.progress-labels{display:flex;justify-content:space-between;font-size:0.625rem;font-weight:500;color:var(--text-muted);margin-bottom:0.5rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase}
+.progress-labels .done{color:var(--accent)}
+.progress-bar{height:4px;width:100%;background:var(--surface3);border-radius:9999px;overflow:hidden}
+.progress-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--accent),#e8c46e);transition:width 0.5s var(--ease)}
+.progress-count{font-size:0.625rem;color:var(--text-muted);text-align:right;margin-top:0.25rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em}
+
+/* Question Card */
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:clamp(1.5rem,4vw,2.25rem);position:relative;overflow:hidden}
+.q-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent-glow),transparent)}
+.q-phase{font-size:0.7rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:1rem}
+.q-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.25rem,4vw,1.75rem);font-weight:400;line-height:1.35;margin-bottom:0.5rem}
+.q-subtitle{color:var(--text-secondary);font-size:0.875rem;margin-bottom:1.5rem}
+
+/* Option Cards */
+.options{display:flex;flex-direction:column;gap:0.625rem}
+.option{
+  display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;
+  border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);
+  cursor:pointer;transition:all 0.3s var(--ease);position:relative;overflow:hidden;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+.option:hover,.option:active{border-color:rgba(212,168,83,0.3);transform:translateX(4px)}
+.option.selected{border-color:var(--accent);background:var(--accent-dim)}
+.option-icon{flex-shrink:0;width:20px;height:20px}
+.option-label{font-size:0.9rem;font-weight:500;color:var(--text-secondary);transition:color 0.3s}
+.option.selected .option-label{color:var(--text)}
+.option-radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--text-muted);flex-shrink:0;margin-left:auto;display:flex;align-items:center;justify-content:center;transition:all 0.3s}
+.option.selected .option-radio{border-color:var(--accent);background:var(--accent)}
+.option.selected .option-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--bg)}
+
+/* Input */
+.q-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem 1.5rem;font-size:1.1rem;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.3s}
+.q-input:focus{border-color:var(--accent)}
+.q-input::placeholder{color:var(--text-muted)}
+.q-input-valid{border-color:var(--success)!important}
+.q-input-error{border-color:var(--accent)!important}
+.q-hint{font-size:0.75rem;margin-top:0.5rem;margin-left:0.25rem}
+.q-hint.valid{color:var(--success)}
+.q-hint.error{color:var(--accent)}
+.q-input-wrap{position:relative}
+.q-input-wrap .q-input-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--text-muted);width:20px;height:20px}
+
+/* Nav */
+.q-nav{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.back-btn{width:100%;margin-top:0.75rem;padding:0.5rem;font-size:0.875rem;color:var(--text-muted);background:none;border:none;cursor:pointer;transition:color 0.3s;touch-action:manipulation}
+.back-btn:hover{color:var(--accent)}
+
+/* Loading */
+.loading-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.loading-ring{position:relative;width:120px;height:120px;margin-bottom:2rem}
+.loading-ring svg{transform:rotate(-90deg);width:100%;height:100%}
+.loading-ring-bg{fill:none;stroke:var(--surface3);stroke-width:4}
+.loading-ring-fill{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset 0.3s ease-out}
+.loading-percent{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300}
+.loading-text{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:300;margin-bottom:1rem}
+.loading-detail{color:var(--accent);font-size:0.9rem;font-family:'JetBrains Mono',monospace;animation:fade-in-up 0.5s ease-out}
+
+/* Result */
+.result-header{text-align:center;margin-bottom:1.5rem}
+.result-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 1rem;border-radius:9999px;background:var(--danger-dim);border:1px solid rgba(199,80,80,0.2);color:var(--danger);font-size:0.7rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.25rem}
+.result-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--danger);animation:pulse 1s ease infinite}
+.result-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:300;line-height:1.3;margin-bottom:0.5rem}
+.result-title em{font-style:italic;background:linear-gradient(135deg,var(--accent),#e8c46e);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.result-desc{color:var(--text-secondary);font-size:0.875rem;line-height:1.6;max-width:28rem;margin:0 auto}
+
+/* Score Ring */
+.score-wrap{display:flex;justify-content:center;margin:1.5rem 0}
+.score-ring{width:170px;height:170px;position:relative;display:flex;align-items:center;justify-content:center}
+.score-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.score-ring .s-bg{fill:none;stroke:var(--surface3);stroke-width:4}
+.score-ring .s-fill{fill:none;stroke:var(--danger);stroke-width:4;stroke-linecap:round;stroke-dasharray:503;stroke-dashoffset:503;transition:stroke-dashoffset 2s var(--ease)}
+.score-ring .s-fill.warn{stroke:var(--accent)}
+.score-ring .s-fill.good{stroke:var(--success)}
+.score-ring-text{text-align:center;z-index:1}
+.score-ring-num{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;line-height:1}
+.score-ring-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);letter-spacing:0.12em;text-transform:uppercase;margin-top:0.25rem}
+.score-verdict{font-size:0.875rem;font-weight:500;margin-top:0.5rem;opacity:0;transition:opacity 0.5s}
+.score-verdict.show{opacity:1}
+
+/* Profile Card */
+.profile-card{text-align:center;margin-bottom:1.5rem}
+.profile-icon{width:64px;height:64px;margin:0 auto 0.75rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem}
+.profile-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;margin-bottom:0.25rem}
+.profile-name span{color:var(--accent);font-style:italic}
+.profile-desc{color:var(--text-secondary);font-size:0.8rem;line-height:1.6;max-width:24rem;margin:0 auto}
+
+/* Pain Points */
+.pains-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--accent);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:1rem}
+.pains{display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem}
+.pain{display:flex;align-items:flex-start;gap:0.875rem;padding:1rem;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);opacity:0;transform:translateY(12px);transition:opacity 0.5s,transform 0.5s}
+.pain.show{opacity:1;transform:translateY(0)}
+.pain-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem}
+.pain-icon.high{background:var(--danger-dim)}
+.pain-icon.med{background:var(--accent-dim)}
+.pain-content{flex:1;min-width:0}
+.pain-title{font-size:0.85rem;font-weight:700;margin-bottom:0.25rem;line-height:1.3}
+.pain-desc{font-size:0.75rem;color:var(--text-secondary);line-height:1.5}
+.pain-badge{font-family:'JetBrains Mono',monospace;font-size:0.55rem;padding:3px 8px;border-radius:4px;background:var(--surface2);color:var(--text-muted);flex-shrink:0;align-self:center}
+.pain-badge.high{color:var(--danger);background:var(--danger-dim)}
+.pain-badge.med{color:var(--accent)}
+
+/* ROI Card */
+.roi-card{background:var(--success-dim);border:1px solid rgba(90,173,110,0.2);border-radius:var(--radius-sm);padding:1.25rem;margin-bottom:1.5rem}
+.roi-title{font-weight:700;font-size:0.9rem;margin-bottom:0.75rem}
+.roi-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.roi-item{text-align:center}
+.roi-value{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:var(--success)}
+.roi-label{font-size:0.7rem;color:var(--text-secondary);margin-top:0.125rem}
+
+/* Pricing */
+.pricing-header{text-align:center;margin-bottom:1.5rem}
+.pricing-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;margin-bottom:0.5rem}
+.pricing-subtitle{color:var(--text-secondary);font-size:0.875rem;line-height:1.6}
+.offer-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem}
+.offer-bar{height:3px;background:linear-gradient(90deg,var(--accent),#e8c46e,var(--accent))}
+.feature-row{display:flex;align-items:flex-start;gap:0.75rem;padding:0.875rem 1.25rem;border-bottom:1px solid var(--border)}
+.feature-row:last-child{border-bottom:none}
+.feature-icon{flex-shrink:0;width:20px;height:20px;color:var(--accent);margin-top:2px}
+.feature-label{font-size:0.85rem;font-weight:600;margin-bottom:0.125rem}
+.feature-desc{font-size:0.75rem;color:var(--text-secondary);line-height:1.4}
+
+.plan{position:relative;padding:1.25rem;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;transition:all 0.3s;background:var(--surface);margin-bottom:0.75rem;touch-action:manipulation}
+.plan:hover{border-color:rgba(212,168,83,0.3)}
+.plan.selected{border-color:var(--accent);background:var(--accent-dim)}
+.plan-popular{position:absolute;top:-0.75rem;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,var(--accent),#c49a3e);color:var(--bg);font-size:0.6rem;font-weight:700;padding:0.25rem 0.75rem;border-radius:9999px;text-transform:uppercase;letter-spacing:0.05em}
+.plan-inner{display:flex;justify-content:space-between;align-items:center;padding-right:2rem}
+.plan-name{font-size:1rem;font-weight:700;margin-bottom:0.125rem}
+.plan-savings{font-size:0.75rem;color:var(--success);font-weight:500}
+.plan-price{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--accent)}
+.plan-period{font-size:0.75rem;color:var(--text-muted)}
+.plan-radio{position:absolute;right:1rem;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:2px solid var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all 0.3s}
+.plan.selected .plan-radio{border-color:var(--accent);background:var(--accent)}
+.plan.selected .plan-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--bg)}
+
+.guarantee{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:1rem}
+.guarantee-icon{flex-shrink:0;width:24px;height:24px;color:var(--success);margin-top:1px}
+
+/* Animations */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@keyframes fade-in-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fade-in-right{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes scale-in{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+@keyframes bounce-in{0%{transform:scale(0)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+.anim-fade-in{animation:fade-in 0.3s ease-out}
+.anim-fade-up{animation:fade-in-up 0.4s ease-out}
+.anim-fade-right{animation:fade-in-right 0.3s ease-out}
+.anim-scale-in{animation:scale-in 0.4s ease-out}
+.anim-bounce-in{animation:bounce-in 0.5s ease-out 0.2s both}
+
+/* Particles */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;border-radius:50%;background:var(--accent);opacity:0;animation:float linear infinite}
+@keyframes float{0%{opacity:0;transform:translateY(100vh) scale(0)}10%{opacity:0.5}90%{opacity:0.5}100%{opacity:0;transform:translateY(-10vh) scale(1)}}
+
+/* Responsive */
+@media (max-width:640px){
+  .start-title{font-size:clamp(1.5rem,7vw,2.5rem)}
+  .q-card{padding:1.25rem 1rem}
+  .option{padding:0.875rem 1rem}
+  .score-ring{width:140px;height:140px}
+  .roi-grid{grid-template-columns:1fr 1fr}
+}
+
+/* SVG icons */
+.icon{display:inline-block;vertical-align:middle}
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<div class="app">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-inner">
+      <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><line x1="7" x2="7" y1="3" y2="21"/><line x1="17" x2="17" y1="3" y2="21"/><line x1="3" x2="7" y1="8" y2="8"/><line x1="17" x2="21" y1="8" y2="8"/><line x1="3" x2="7" y1="16" y2="16"/><line x1="17" x2="21" y1="16" y2="16"/></svg>
+      <span class="header-text">MrCine<span>PRO</span></span>
+    </div>
+  </div>
+
+  <!-- START SCREEN -->
+  <div id="screen-start" class="screen start active">
+    <div class="start-badge anim-fade-up">
+      <span class="start-badge-dot"></span> Diagnóstico Gratuito
+    </div>
+
+    <h1 class="start-title anim-fade-up">Cansado de rolar a Netflix sem saber o que assistir?</h1>
+
+    <p class="start-subtitle anim-fade-up">
+      <em>Seu perfil de cinema revela o filme perfeito em segundos.</em>
+    </p>
+
+    <div class="start-benefits anim-fade-up">
+      <p>Ao final do quiz você vai:</p>
+      <ul>
+        <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span> Descobrir seu perfil real de cinema</li>
+        <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span> Ver quanto tempo e dinheiro está desperdiçando</li>
+        <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span> Conhecer a IA que encontra o filme perfeito pra você</li>
+      </ul>
+    </div>
+
+    <div class="start-trust anim-fade-up">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      100% gratuito — sem pegadinhas
+    </div>
+
+    <div class="start-meta anim-fade-up">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ~3 minutos</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 01-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 011-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 011.52 0C14.51 3.81 17 5 19 5a1 1 0 011 1z"/></svg> Sem cadastro</span>
+    </div>
+
+    <div class="testimonials anim-fade-up">
+      <p class="testimonials-label">O que dizem nossos usuários</p>
+      <div class="testimonial"><div class="testimonial-header"><div class="testimonial-avatar">M</div><div><p class="testimonial-name">Mariana S.</p><div class="testimonial-stars"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div></div><p class="testimonial-text">"Finalmente parei de brigar com meu namorado pra escolher filme. O app sempre acerta o que a gente quer ver!"</p></div>
+      <div class="testimonial"><div class="testimonial-header"><div class="testimonial-avatar">C</div><div><p class="testimonial-name">Camila R.</p><div class="testimonial-stars"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div></div><p class="testimonial-text">"A função de mostrar em qual streaming o filme está salvou minha vida. Vale cada centavo do plano PRO."</p></div>
+      <div class="testimonial"><div class="testimonial-header"><div class="testimonial-avatar">L</div><div><p class="testimonial-name">Lucas M.</p><div class="testimonial-stars"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div></div></div><p class="testimonial-text">"O Oráculo de IA me recomendou 3 filmes perfeitos em 5 segundos. Eu demoraria 40 minutos pra achar um desses."</p></div>
+    </div>
+
+    <button class="cta w-full anim-fade-up" onclick="quiz.start()" ontouchend="event.preventDefault();quiz.start()" style="max-width:24rem">
+      Começar Agora <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </button>
+
+    <p class="disclaimer">O MrCine é uma plataforma de recomendação de filmes por IA. Não hospedamos, transmitimos ou baixamos filmes. Apenas ajudamos você a descobrir o filme perfeito para o seu momento.</p>
+  </div>
+
+  <!-- QUESTION SCREEN -->
+  <div id="screen-questions" class="screen">
+    <div class="progress-wrap">
+      <div class="progress-labels" id="progress-labels"></div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-count" id="progress-count"></div>
+    </div>
+    <div class="q-card" id="question-card"></div>
+    <div class="q-nav" id="question-nav"></div>
+  </div>
+
+  <!-- LOADING SCREEN -->
+  <div id="screen-loading" class="screen">
+    <div class="loading-inner" style="flex:1;justify-content:center">
+      <div class="loading-ring">
+        <svg viewBox="0 0 100 100"><circle class="loading-ring-bg" cx="50" cy="50" r="45"/><circle class="loading-ring-fill" id="loading-fill" cx="50" cy="50" r="45"/></svg>
+        <div class="loading-percent" id="loading-percent">0%</div>
+      </div>
+      <h2 class="loading-text">Criando seu perfil sob medida</h2>
+      <p class="loading-detail" id="loading-detail"></p>
+    </div>
+  </div>
+
+  <!-- RESULT SCREEN -->
+  <div id="screen-result" class="screen">
+    <div class="result-header">
+      <div class="result-badge"><span class="result-badge-dot"></span> Diagnóstico Completo</div>
+      <h2 class="result-title">Seu perfil revela <em>pontos críticos</em> que exigem atenção</h2>
+      <p class="result-desc">Baseado nas suas respostas, identificamos padrões que estão impactando negativamente sua experiência com entretenimento.</p>
+    </div>
+
+    <div class="score-wrap"><div class="score-ring">
+      <svg viewBox="0 0 180 180"><circle class="s-bg" cx="90" cy="90" r="80"/><circle class="s-fill" id="score-fill" cx="90" cy="90" r="80"/></svg>
+      <div class="score-ring-text"><div class="score-ring-num" id="score-num">0</div><div class="score-ring-label">Índice de Satisfação</div><div class="score-verdict" id="score-verdict"></div></div>
+    </div></div>
+
+    <div class="profile-card" id="profile-card"></div>
+    <div class="pains-label">Problemas identificados</div>
+    <div class="pains" id="pains"></div>
+
+    <button class="cta w-full anim-fade-up" onclick="quiz.goPricing()" ontouchend="event.preventDefault();quiz.goPricing()">
+      Desbloquear Meu Perfil Completo <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </button>
+    <p style="text-align:center;color:var(--text-muted);font-size:0.75rem;margin-top:0.75rem">Junte-se a mais de 2.000 cinéfilos que já pararam de perder tempo escolhendo filme</p>
+  </div>
+
+  <!-- PRICING SCREEN -->
+  <div id="screen-pricing" class="screen">
+    <div class="pricing-header">
+      <h2 class="pricing-title">Desbloqueie Seu <span style="color:var(--accent)">Perfil Completo</span></h2>
+      <p class="pricing-subtitle">Apenas recomendação profissional de filmes. Chega de perder tempo.</p>
+    </div>
+
+    <div class="offer-section" id="offer-features"></div>
+    <div id="roi-display"></div>
+    <div class="pains-label" style="margin-top:1.5rem">Escolha seu plano</div>
+    <div id="plans"></div>
+
+    <button class="cta w-full" id="subscribe-btn" onclick="quiz.subscribe()" ontouchend="event.preventDefault();quiz.subscribe()">
+      Assinar Agora <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+    </button>
+
+    <div class="guarantee" style="margin-top:1rem">
+      <svg class="guarantee-icon" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div><strong style="font-size:0.85rem">Garantia de 7 Dias</strong><p style="color:var(--text-secondary);font-size:0.75rem;margin-top:0.125rem">Se você não sentir que economizou tempo e encontrou filmes melhores na primeira semana, devolvemos 100% do seu dinheiro. Sem perguntas.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- TikTok Pixel Code -->
+<script>
+!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};ttq.load('D58V12JC77UD75S4LAF0');ttq.page()}(window,document,'ttq');
+</script>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YZ3N30DV7X"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-YZ3N30DV7X');</script>
+
+<script>
+(function(){
+/* ====== QUIZ DATA ====== */
+var PHASES = [
+  { id:1, label:'PERFIL' },
+  { id:2, label:'HÁBITOS' },
+  { id:3, label:'DESAFIOS' },
+  { id:4, label:'PERSONALIDADE' },
+  { id:5, label:'CAPTURA' }
+];
+
+var QUESTIONS = [
+  { id:'goal', phase:1, title:'Qual é o seu principal objetivo ao assistir algo?', type:'single', options:[
+    { id:'relax', label:'Relaxar e desligar a mente', icon:'☕' },
+    { id:'learn', label:'Aprender e expandir horizontes', icon:'🧠' },
+    { id:'feel', label:'Me emocionar profundamente', icon:'💕' },
+    { id:'distract', label:'Pura adrenalina e diversão', icon:'⚡' }
+  ]},
+  { id:'genres', phase:1, title:'Quais são seus gêneros favoritos?', subtitle:'Selecione pelo menos 2 opções', type:'multiple', min:2, options:[
+    { id:'action', label:'Ação & Aventura' },
+    { id:'scifi', label:'Ficção Científica' },
+    { id:'drama', label:'Drama' },
+    { id:'comedy', label:'Comédia' },
+    { id:'thriller', label:'Suspense & Terror' },
+    { id:'doc', label:'Documentários' },
+    { id:'romance', label:'Romance' }
+  ]},
+  { id:'era', phase:1, title:'Qual época de filmes mais te atrai?', type:'single', options:[
+    { id:'new', label:'Lançamentos (Últimos 3 anos)' },
+    { id:'2000s', label:'Anos 2000 a 2010' },
+    { id:'classics', label:'Clássicos (Antes de 2000)' },
+    { id:'any', label:'Sou eclético(a), a época não importa' }
+  ]},
+  { id:'format', phase:1, title:'O que você prefere maratonar?', type:'single', options:[
+    { id:'movies', label:'Apenas Filmes (Início, meio e fim rápidos)' },
+    { id:'series', label:'Apenas Séries (Histórias longas)' },
+    { id:'both', label:'Ambos, depende do meu humor' }
+  ]},
+  { id:'frequency', phase:2, title:'Com que frequência você assiste filmes ou séries?', type:'single', options:[
+    { id:'daily', label:'Todos os dias' },
+    { id:'weekends', label:'Apenas nos finais de semana' },
+    { id:'rarely', label:'Raramente, quando tenho tempo' }
+  ]},
+  { id:'company', phase:2, title:'Com quem você costuma assistir?', type:'single', options:[
+    { id:'alone', label:'Sozinho(a) (Meu momento)' },
+    { id:'partner', label:'Com meu parceiro(a)' },
+    { id:'family', label:'Com a família/filhos' },
+    { id:'friends', label:'Com amigos' }
+  ]},
+  { id:'streamings', phase:2, title:'Quais streamings você assina?', subtitle:'Selecione todos que você tem acesso', type:'multiple', min:1, options:[
+    { id:'netflix', label:'Netflix' },
+    { id:'prime', label:'Prime Video' },
+    { id:'max', label:'Max (HBO)' },
+    { id:'disney', label:'Disney+ / Star+' },
+    { id:'apple', label:'Apple TV+' },
+    { id:'other', label:'Outros / Alternativos' }
+  ]},
+  { id:'time', phase:2, title:'Qual é o seu horário favorito para assistir?', type:'single', options:[
+    { id:'morning', label:'Manhã / Tarde' },
+    { id:'night', label:'Noite (Após o trabalho)' },
+    { id:'latenight', label:'Madrugada (Coruja)' }
+  ]},
+  { id:'struggle', phase:3, title:'Qual é a sua maior frustração hoje?', type:'single', options:[
+    { id:'time_lost', label:'Perco 40 minutos escolhendo o que ver' },
+    { id:'where', label:'Nunca sei em qual streaming o filme está' },
+    { id:'sleep', label:'Durmo no meio porque escolhi um filme chato' },
+    { id:'forget', label:'Esqueço os filmes que me recomendaram' }
+  ]},
+  { id:'annoyance', phase:3, title:'O que mais te irrita em plataformas de streaming?', type:'single', options:[
+    { id:'bad_algo', label:'O algoritmo só me recomenda as mesmas coisas' },
+    { id:'interface', label:'A interface é confusa e lenta' },
+    { id:'spoilers', label:'Tomar spoilers antes de assistir' },
+    { id:'cancel', label:'Cancelarem minhas séries favoritas' }
+  ]},
+  { id:'decision', phase:3, title:'Quando você não sabe o que assistir, o que acontece?', type:'single', options:[
+    { id:'paralyzed', label:'Fico paralisado(a) rolando o catálogo por minutos' },
+    { id:'random', label:'Escolho qualquer um e torço para ser bom' },
+    { id:'ask', label:'Pergunto para alguém o que está assistindo' },
+    { id:'revisit', label:'Acabo reassistindo algo que já vi' }
+  ]},
+  { id:'decision_time', phase:3, title:'Quanto tempo você leva pra escolher um filme quando está em dúvida?', type:'single', options:[
+    { id:'10min', label:'Até 10 minutos — sou rápido(a)' },
+    { id:'30min', label:'Uns 30 minutos — demoro um pouco' },
+    { id:'1h', label:'Cerca de 1 hora — é uma decisão difícil' },
+    { id:'1h+', label:'Mais de 1 hora — às vezes desisto' }
+  ]},
+  { id:'recommendations', phase:4, title:'Como você lida com recomendações de amigos?', type:'single', options:[
+    { id:'trust', label:'Assisto de olhos fechados' },
+    { id:'research', label:'Pesquiso a nota e o trailer antes' },
+    { id:'ignore', label:'Anoto, mas acabo nunca assistindo' }
+  ]},
+  { id:'plot_twists', phase:4, title:'Qual é a sua relação com "Plot Twists" (Finais Surpresa)?', type:'single', options:[
+    { id:'love', label:'Amo! Quanto mais confuso, melhor' },
+    { id:'hate', label:'Odeio, prefiro histórias lineares e claras' },
+    { id:'depends', label:'Gosto, desde que faça sentido na história' }
+  ]},
+  { id:'rewatch', phase:4, title:'Como você se sente sobre reassistir filmes?', type:'single', options:[
+    { id:'always', label:'Adoro! Sempre descubro detalhes novos' },
+    { id:'never', label:'Nunca reassisto, a vida é curta demais' },
+    { id:'comfort', label:'Reassisto meus favoritos quando preciso de conforto' },
+    { id:'rarely', label:'Raramente, só se passou muito tempo' }
+  ]},
+  { id:'time_value', phase:4, title:'Se pudesse colocar um preço, quanto vale uma hora do seu tempo livre?', type:'single', options:[
+    { id:'10', label:'R$ 10 — meu tempo é importante, mas nem tanto' },
+    { id:'25', label:'R$ 25 — valorizo bastante meu descanso' },
+    { id:'50', label:'R$ 50 — cada hora livre é preciosa' },
+    { id:'100', label:'R$ 100+ — meu tempo livre é inestimável' }
+  ]},
+  { id:'name', phase:5, title:'Como podemos te chamar?', subtitle:'Para personalizarmos o seu Perfil Cinematográfico.', type:'input', placeholder:'Seu primeiro nome' },
+  { id:'email', phase:5, title:'Para onde devemos enviar o seu resultado?', subtitle:'Fique tranquilo, odiamos spam tanto quanto você.', type:'input', placeholder:'seu.melhor@email.com' },
+  { id:'whatsapp', phase:5, title:'Qual seu WhatsApp?', subtitle:'Opcional. Enviaremos novidades e dicas de filmes por lá.', type:'input', placeholder:'(11) 99999-9999' }
+];
+
+var LOADING_TEXTS = [
+  "Analisando suas preferências de gênero...",
+  "Cruzando dados com milhares de filmes...",
+  "Mapeando seus hábitos de consumo...",
+  "Calculando seu Perfil Cinematográfico...",
+  "Gerando seu algoritmo personalizado..."
+];
+
+var PROFILES = {
+  'aventureiro-noturno': { name:'Aventureiro Noturno', icon:'🌙', color:'from-amber-700 to-amber-500', desc:'Você busca adrenalina e emoção nas madrugadas. Filmes de ação, ficção científica e suspense são seu combustível.' },
+  'cinefilo-contemplativo': { name:'Cinéfilo Contemplativo', icon:'🎬', color:'from-amber-600 to-orange-500', desc:'Você aprecia a sétima arte em sua forma mais pura. Dramas profundos, roteiros elaborados e atuações marcantes fazem seu coração bater mais forte.' },
+  'romantico-serial': { name:'Romântico Serial', icon:'💕', color:'from-rose-600 to-pink-500', desc:'Seu coração bate mais forte com histórias de amor. Comédias românticas, dramas emocionais e narrativas que aquecem a alma são seu refúgio.' },
+  'explorador-criativo': { name:'Explorador Criativo', icon:'✨', color:'from-emerald-600 to-teal-500', desc:'Você adora sair da zona de conforto. Animações, fantasia e ficção científica te levam a mundos impossíveis.' },
+  'critico-de-sofa': { name:'Crítico de Sofá', icon:'🧐', color:'from-red-700 to-red-500', desc:'Você assiste com olhar analítico. Suspense, terror e documentários são seus favoritos. Nada escapa ao seu julgamento afiado!' },
+  'maratonador-universal': { name:'Maratonador Universal', icon:'🍿', color:'from-yellow-700 to-amber-500', desc:'Você é eclético e assiste de tudo um pouco! Comédias, ação, drama — contanto que seja bom, você está dentro.' }
+};
+
+var PAIN_POINTS = [
+  { icon:'⏱️', title:'Tempo perdido em escolhas', desc:'Você estima perder mais de 30 minutos por sessão apenas decidindo o que assistir.', severity:'high', check:function(a){return ['30min','1h','1h+'].indexOf(a.decision_time)>=0} },
+  { icon:'😔', title:'Baixa satisfação com conteúdo', desc:'Seu índice de satisfação ficou baixo. A maioria das suas sessões recentes não entregou o que você esperava.', severity:'high', check:function(a){return a.struggle==='sleep'||a.struggle==='time_lost'} },
+  { icon:'🔄', title:'Paralisia de decisão crônica', desc:'Quase toda vez você acaba desistindo de assistir algo por não encontrar nada bom.', severity:'high', check:function(a){return a.decision==='paralyzed'} },
+  { icon:'💸', title:'Investimento mal aproveitado', desc:'Você gasta em streaming, mas o retorno em entretenimento de qualidade está muito abaixo do esperado.', severity:'med', check:function(a){return (a.streamings||[]).length>=3} },
+  { icon:'🎯', title:'Recomendações genéricas', desc:'As plataformas usam algoritmos que não entendem seu perfil real. Você recebe sugestões que não combinam com seus gostos.', severity:'med', check:function(a){return a.annoyance==='bad_algo'} }
+];
+
+var FEATURES = [
+  { title:'Oráculo de IA', desc:'Um algoritmo que aprende com seus gostos a cada interação. Quanto mais você usa, mais certeiro ele fica.' },
+  { title:'Gamificação', desc:'Acumule XP, suba de nível, desbloqueie conquistas e compita no ranking. Transforme sua jornada de filmes em um RPG.' },
+  { title:'Decisão em 5 Segundos', desc:'Chega de 30 minutos rolando catálogo. Abra o app, veja a recomendação, assista. Simples assim.' },
+  { title:'Perfil que Evolui', desc:'Seu perfil cinematográfico muda conforme você assiste, avalia e interage. Nunca mais receba recomendações genéricas.' },
+  { title:'Modo Casal e Grupo', desc:'Assistindo com seu parceiro ou amigos? O Oráculo cruza os perfis e sugere o filme que agrada todo mundo.' },
+  { title:'Notificações Inteligentes', desc:'Novo filme do seu diretor favorito? Estreia do gênero que você ama? O Oráculo te avisa na hora certa.' }
+];
+
+var PLANS = [
+  { id:'monthly', name:'Mensal', price:'R$ 9,00', period:'/mês', popular:false, savings:'' },
+  { id:'quarterly', name:'Trimestral', price:'R$ 24,00', period:'/3 meses', popular:true, savings:'Mais Popular' },
+  { id:'annual', name:'Anual', price:'R$ 69,00', period:'/ano', popular:false, savings:'Melhor Custo-Benefício' }
+];
+
+/* ====== HELPERS ====== */
+function $(id){ return document.getElementById(id); }
+function showScreen(id){
+  var screens = document.querySelectorAll('.screen');
+  for(var i=0;i<screens.length;i++) screens[i].classList.remove('active');
+  $(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function formatWhatsApp(v){
+  var d=v.replace(/\D/g,'');
+  var n=d.startsWith('55')?d.slice(2):d;
+  var f='';
+  if(n.length<=2) f='('+n;
+  else if(n.length<=7) f='('+n.slice(0,2)+') '+n.slice(2);
+  else f='('+n.slice(0,2)+') '+n.slice(2,7)+'-'+n.slice(7,11);
+  var valid=n.length===11&&/^[1-9]{2}9\d{8}$/.test(n);
+  return {formatted:f,digits:n,isValid:valid};
+}
+function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((e||'').trim()); }
+
+/* ====== PROFILE CALC ====== */
+function calculateProfile(a){
+  var scores={};
+  var goalMap={relax:'maratonador-universal',learn:'cinefilo-contemplativo',feel:'romantico-serial',distract:'aventureiro-noturno'};
+  if(a.goal&&goalMap[a.goal]) scores[goalMap[a.goal]]=(scores[goalMap[a.goal]]||0)+3;
+  var genreMap={action:['aventureiro-noturno'],scifi:['aventureiro-noturno','explorador-criativo'],drama:['cinefilo-contemplativo','romantico-serial'],comedy:['maratonador-universal'],thriller:['critico-de-sofa'],doc:['cinefilo-contemplativo','critico-de-sofa'],romance:['romantico-serial']};
+  (a.genres||[]).forEach(function(g){ (genreMap[g]||[]).forEach(function(p){ scores[p]=(scores[p]||0)+2; }); });
+  if(a.era==='classics') scores['cinefilo-contemplativo']=(scores['cinefilo-contemplativo']||0)+2;
+  if(a.format==='series') scores['maratonador-universal']=(scores['maratonador-universal']||0)+1;
+  if(a.time==='latenight') scores['aventureiro-noturno']=(scores['aventureiro-noturno']||0)+2;
+  if(a.struggle==='time_lost') scores['maratonador-universal']=(scores['maratonador-universal']||0)+1;
+  if(a.struggle==='where') scores['critico-de-sofa']=(scores['critico-de-sofa']||0)+1;
+  if(a.plot_twists==='love'){ scores['aventureiro-noturno']=(scores['aventureiro-noturno']||0)+1;scores['critico-de-sofa']=(scores['critico-de-sofa']||0)+1; }
+  if(a.recommendations==='research'){ scores['critico-de-sofa']=(scores['critico-de-sofa']||0)+1;scores['cinefilo-contemplativo']=(scores['cinefilo-contemplativo']||0)+1; }
+  var max=0,best='maratonador-universal';
+  for(var k in scores){ if(scores[k]>max){ max=scores[k];best=k; } }
+  return PROFILES[best];
+}
+
+function calculateScore(a){
+  var s=70;
+  if(a.struggle==='time_lost') s-=20; if(a.struggle==='where') s-=15; if(a.struggle==='sleep') s-=18;
+  if(a.struggle==='forget') s-=10; if(a.decision==='paralyzed') s-=15; if(a.decision==='random') s-=10;
+  if(a.annoyance==='bad_algo') s-=12; if(a.annoyance==='interface') s-=8; if(a.frequency==='daily') s-=5;
+  var tm={ '10min':-2, '30min':-8, '1h':-15, '1h+':-20 };
+  if(a.decision_time&&tm[a.decision_time]!==undefined) s+=tm[a.decision_time];
+  return Math.max(15,Math.min(85,s));
+}
+
+/* ====== QUIZ ENGINE ====== */
+window.quiz = {
+  answers:{},
+  qIndex:0,
+  selectedPlan:'quarterly',
+
+  start: function(){
+    this.answers={}; this.qIndex=0;
+    showScreen('screen-questions');
+    this.renderQuestion();
+    if(typeof ttq!=='undefined') ttq.track('InitiateCheckout');
+    if(typeof gtag!=='undefined') gtag('event','quiz_start');
+  },
+
+  renderQuestion: function(){
+    var q=QUESTIONS[this.qIndex];
+    var phase=PHASES.find(function(p){return p.id===q.phase});
+    var total=QUESTIONS.length;
+    var perc=((this.qIndex+1)/total*100).toFixed(0);
+
+    // Progress
+    var lbls='';
+    PHASES.forEach(function(p){
+      lbls+='<span class="'+(q.phase>=p.id?'done':'')+'">'+p.label+'</span>';
+    });
+    $('progress-labels').innerHTML=lbls;
+    $('progress-fill').style.width=perc+'%';
+    $('progress-count').textContent=String(this.qIndex+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+
+    var phaseLabel=phase?phase.label:'PERGUNTA';
+    var curAns=this.answers[q.id];
+
+    var html='<div class="q-phase">'+phaseLabel+' — Pergunta '+String(this.qIndex+1).padStart(2,'0')+'</div>';
+    html+='<h2 class="q-title">'+q.title+'</h2>';
+    if(q.subtitle) html+='<p class="q-subtitle">'+q.subtitle+'</p>';
+
+    var self=this;
+    if(q.type==='input'){
+      var isWA=q.id==='whatsapp';
+      html+='<div class="q-input-wrap">';
+      html+='<input class="q-input" id="q-input" type="'+(q.id==='email'?'email':isWA?'tel':'text')+'" placeholder="'+q.placeholder+'" value="'+(isWA?(curAns?formatWhatsApp(curAns+'').formatted:''):(curAns||''))+'" autocomplete="off" autofocus onkeydown="if(event.key===\'Enter\')quiz.goNext()">';
+      html+='</div>';
+    } else {
+      html+='<div class="options">';
+      q.options.forEach(function(o){
+        var sel=q.type==='multiple'?((curAns||[]).indexOf(o.id)>=0):curAns===o.id;
+        html+='<div class="option'+(sel?' selected':'')+'" onclick="quiz.selectOption(\''+o.id+'\')" ontouchend="event.preventDefault();quiz.selectOption(\''+o.id+'\')">';
+        if(o.icon) html+='<span class="option-icon">'+o.icon+'</span>';
+        html+='<span class="option-label">'+o.label+'</span>';
+        html+='<div class="option-radio"></div></div>';
+      });
+      html+='</div>';
+    }
+
+    $('question-card').innerHTML=html;
+
+    // Nav
+    var nav='';
+    if(q.type!=='single'){
+      var disabled=this.isNextDisabled();
+      nav+='<button class="cta w-full" '+(disabled?'disabled aria-disabled="true"':'onclick="quiz.goNext()" ontouchend="event.preventDefault();quiz.goNext()"')+'>Continuar</button>';
+      if(this.qIndex>0){
+        nav+='<button class="back-btn" onclick="quiz.goBack()" ontouchend="event.preventDefault();quiz.goBack()">← Voltar</button>';
+      }
+    }
+    $('question-nav').innerHTML=nav;
+    $('question-card').className='q-card anim-fade-right';
+
+    // Re-render animation class
+    setTimeout(function(){$('question-card').className='q-card';},300);
+  },
+
+  selectOption: function(id){
+    var q=QUESTIONS[this.qIndex];
+    if(q.type==='single'){
+      this.answers[q.id]=id;
+      this.goNext();
+    } else {
+      var cur=this.answers[q.id]||[];
+      var idx=cur.indexOf(id);
+      if(idx>=0) cur.splice(idx,1); else cur.push(id);
+      this.answers[q.id]=cur;
+      this.renderQuestion();
+    }
+  },
+
+  goNext: function(){
+    var q=QUESTIONS[this.qIndex];
+    if(q.type==='input'){
+      var val=$('q-input').value;
+      if(q.id==='whatsapp'){
+        var f=formatWhatsApp(val);
+        if(val.length>0) val=f.digits; else val='';
+      }
+      this.answers[q.id]=val;
+    }
+    if(this.isNextDisabled()) return;
+    if(this.qIndex<QUESTIONS.length-1){
+      this.qIndex++;
+      this.renderQuestion();
+      try { window.scrollTo(0,0); } catch(e){}
+    } else {
+      this.startLoading();
+    }
+  },
+
+  goBack: function(){
+    if(this.qIndex>0){ this.qIndex--; this.renderQuestion(); try { window.scrollTo(0,0); } catch(e){} }
+  },
+
+  isNextDisabled: function(){
+    var q=QUESTIONS[this.qIndex];
+    if(q.type==='input'){
+      var val='';
+      if(q.id==='whatsapp'){
+        var raw=$('q-input')?$('q-input').value:'';
+        var d=raw.replace(/\D/g,'');
+        if(d.length===0) return false;
+        return !formatWhatsApp(raw).isValid;
+      } else {
+        val=($('q-input')?$('q-input').value:'').trim();
+        if(q.id==='email') return !isValidEmail(val);
+        return val.length<2;
+      }
+    }
+    var ans=this.answers[q.id];
+    if(!ans) return true;
+    if(q.type==='multiple'&&q.min) return ans.length<q.min;
+    return false;
+  },
+
+  startLoading: function(){
+    showScreen('screen-loading');
+    var self=this, prog=0;
+    var int=setInterval(function(){
+      prog+=2;
+      if(prog>=100){ prog=100; clearInterval(int); }
+      $('loading-fill').style.strokeDashoffset=283-(283*prog/100);
+      $('loading-percent').textContent=prog+'%';
+      if(prog%20===0){
+        var tIdx=Math.min(Math.floor(prog/20),LOADING_TEXTS.length-1);
+        $('loading-detail').textContent=LOADING_TEXTS[tIdx];
+        $('loading-detail').className='loading-detail anim-fade-up';
+      }
+      if(prog===100){ setTimeout(function(){ self.showResult(); },500); }
+    },60);
+  },
+
+  showResult: function(){
+    var prof=calculateProfile(this.answers);
+    var score=calculateScore(this.answers);
+    showScreen('screen-result');
+
+    // Score ring
+    var circumference=2*Math.PI*80;
+    var fill=$('score-fill');
+    $('score-num').textContent='0';
+    $('score-verdict').className='score-verdict';
+    setTimeout(function(){
+      fill.style.strokeDashoffset=circumference-(score/100*circumference);
+      if(score>60) fill.classList.add('good');
+      else if(score>40) fill.classList.add('warn');
+    },300);
+
+    var start=performance.now()+800;
+    function animScore(now){
+      var t=Math.min((now-start)/1800,1);
+      if(t<0){ requestAnimationFrame(animScore);return; }
+      var eased=1-Math.pow(1-t,3);
+      $('score-num').textContent=Math.round(eased*score);
+      if(t<1) requestAnimationFrame(animScore);
+      else setTimeout(function(){
+        var v=score<40?'Abaixo do ideal':score<60?'Precisa melhorar':'Bom, mas pode melhorar';
+        var c=score<40?'var(--danger)':score<60?'var(--accent)':'var(--success)';
+        var el=$('score-verdict');el.textContent=v;el.style.color=c;el.className='score-verdict show';
+      },200);
+    }
+    requestAnimationFrame(animScore);
+
+    // Profile
+    var bg='linear-gradient(135deg, #d4a853, #c49a3e)';
+    $('profile-card').innerHTML='<div class="profile-icon anim-bounce-in" style="background:'+bg+'">'+prof.icon+'</div><h3 class="profile-name">Você é o <span>'+prof.name+'</span></h3><p class="profile-desc">'+prof.desc+'</p>';
+
+    // Pain points
+    var pains=PAIN_POINTS.filter(function(p){return p.check(quiz.answers)}).slice(0,5);
+    var ph='';
+    pains.forEach(function(p,i){
+      ph+='<div class="pain" id="pain-'+i+'"><div class="pain-icon '+p.severity+'">'+p.icon+'</div><div class="pain-content"><strong class="pain-title">'+p.title+'</strong><p class="pain-desc">'+p.desc+'</p></div><div class="pain-badge '+p.severity+'">'+(p.severity==='high'?'Alto':'Médio')+'</div></div>';
+    });
+    $('pains').innerHTML=ph;
+    pains.forEach(function(_,i){ setTimeout(function(){ var el=$('pain-'+i); if(el) el.classList.add('show'); },1200+i*250); });
+
+    if(typeof ttq!=='undefined') ttq.track('CompletePayment');
+    if(typeof gtag!=='undefined') gtag('event','quiz_complete');
+  },
+
+  goPricing: function(){
+    showScreen('screen-pricing');
+    this.renderPricing();
+  },
+
+  renderPricing: function(){
+    // Features
+    var fh='';
+    FEATURES.forEach(function(f){
+      fh+='<div class="feature-row"><svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><div><div class="feature-label">'+f.title+'</div><div class="feature-desc">'+f.desc+'</div></div></div>';
+    });
+    $('offer-features').innerHTML='<div class="offer-bar"></div>'+fh;
+
+    // Plans
+    var self=this;
+    var ph='';
+    PLANS.forEach(function(p){
+      ph+='<div class="plan'+(p.id===self.selectedPlan?' selected':'')+'" onclick="quiz.selectPlan(\''+p.id+'\')" ontouchend="event.preventDefault();quiz.selectPlan(\''+p.id+'\')">';
+      if(p.popular) ph+='<div class="plan-popular">'+p.savings+'</div>';
+      ph+='<div class="plan-inner"><div><div class="plan-name">'+p.name+'</div>'+(p.savings?'<div class="plan-savings">'+p.savings+'</div>':'')+'</div><div style="text-align:right"><div class="plan-price">'+p.price+'</div><div class="plan-period">'+p.period+'</div></div></div>';
+      ph+='<div class="plan-radio"></div></div>';
+    });
+    $('plans').innerHTML=ph;
+
+    if(typeof ttq!=='undefined') ttq.track('ViewContent');
+  },
+
+  selectPlan: function(id){
+    this.selectedPlan=id;
+    this.renderPricing();
+  },
+
+  subscribe: function(){
+    if(typeof ttq!=='undefined') ttq.track('Subscribe');
+    if(typeof gtag!=='undefined') gtag('event','subscribe');
+    window.location.href='https://mrcine.pro/signup?plan='+this.selectedPlan+'&email='+encodeURIComponent(this.answers.email||'');
+  }
+};
+
+/* ====== INIT ====== */
+showScreen('screen-start');
+
+// Particles
+(function(){
+  var c=$('particles');
+  for(var i=0;i<20;i++){
+    var p=document.createElement('div');p.className='particle';
+    p.style.left=Math.random()*100+'%';
+    p.style.animationDuration=(10+Math.random()*15)+'s';
+    p.style.animationDelay=Math.random()*12+'s';
+    var s=(1+Math.random()*2.5)+'px';p.style.width=s;p.style.height=s;
+    c.appendChild(p);
+  }
+})();
+
+// Auto-start if ?start=true
+if(window.location.search.indexOf('start=true')>=0){
+  setTimeout(function(){ quiz.start(); },200);
+}
+
+})();
+</script>
+</body>
+</html>
