@@ -853,6 +853,44 @@ showResult: function(){
     var score=calculateScore(this.answers);
     showScreen('screen-result');
     upsertResponse({profile_type:prof.name,answers:this.answers,completed:true,last_step:QUESTIONS.length});
+
+    var circumference=2*Math.PI*80;
+    var fill=$('score-fill');
+    $('score-num').textContent='0';
+    $('score-verdict').className='score-verdict';
+    setTimeout(function(){
+      fill.style.strokeDashoffset=circumference-(score/100*circumference);
+      if(score>60) fill.classList.add('good');
+      else if(score>40) fill.classList.add('warn');
+    },300);
+
+    var start=performance.now()+800;
+    var self=this;
+    function animScore(now){
+      var t=Math.min((now-start)/1800,1);
+      if(t<0){ requestAnimationFrame(animScore);return; }
+      var eased=1-Math.pow(1-t,3);
+      $('score-num').textContent=Math.round(eased*score);
+      if(t<1) requestAnimationFrame(animScore);
+      else setTimeout(function(){
+        var v=score<40?'Abaixo do ideal':score<60?'Precisa melhorar':'Bom, mas pode melhorar';
+        var c=score<40?'var(--danger)':score<60?'var(--accent)':'var(--success)';
+        var el=$('score-verdict');el.textContent=v;el.style.color=c;el.className='score-verdict show';
+      },200);
+    }
+    requestAnimationFrame(animScore);
+
+    var bg='linear-gradient(135deg, #d4a853, #c49a3e)';
+    $('profile-card').innerHTML='<div class="profile-icon anim-bounce-in" style="background:'+bg+'">'+prof.icon+'</div><h3 class="profile-name">Você é o <span>'+prof.name+'</span></h3><p class="profile-desc">'+prof.desc+'</p>';
+
+    var pains=PAIN_POINTS.filter(function(p){return p.check(quiz.answers)}).slice(0,5);
+    var ph='';
+    pains.forEach(function(p,i){
+      ph+='<div class="pain" id="pain-'+i+'"><div class="pain-icon '+p.severity+'">'+p.icon+'</div><div class="pain-content"><strong class="pain-title">'+p.title+'</strong><p class="pain-desc">'+p.desc+'</p></div><div class="pain-badge '+p.severity+'">'+(p.severity==='high'?'Alto':'Médio')+'</div></div>';
+    });
+    $('pains').innerHTML=ph;
+    pains.forEach(function(_,i){ setTimeout(function(){ var el=$('pain-'+i); if(el) el.classList.add('show'); },1200+i*250); });
+
     if(typeof ttq!=='undefined') ttq.track('CompletePayment');
     if(typeof gtag!=='undefined') gtag('event','quiz_complete');
   },
