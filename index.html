@@ -52,6 +52,17 @@ body::before{
 .screen.start{display:none}
 .screen.start.active{display:flex;align-items:center;justify-content:flex-start;text-align:center;margin-top:2rem}
 
+/* Swipe Hero */
+.swipe-hero{width:100%;max-width:28rem;margin:0 auto 1.5rem;position:relative;overflow:hidden;border-radius:var(--radius);background:var(--surface);border:1px solid var(--border)}
+.swipe-slides{display:flex;transition:transform 0.5s var(--ease)}
+.swipe-slide{flex:0 0 100%;padding:1.5rem;display:flex;flex-direction:column;justify-content:center;min-height:180px}
+.swipe-hook{font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,5vw,1.8rem);font-weight:300;line-height:1.25;margin-bottom:0.75rem}
+.swipe-hook strong{color:var(--accent);font-weight:600}
+.swipe-dor{font-size:0.85rem;color:var(--text-secondary);line-height:1.5}
+.swipe-indicator{display:flex;justify-content:center;gap:0.5rem;padding-bottom:1rem}
+.swipe-dot{width:8px;height:8px;border-radius:50%;background:var(--surface3);transition:all 0.3s}
+.swipe-dot.active{background:var(--accent);width:24px;border-radius:4px}
+
 /* Start Screen */
 .start-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.375rem 1rem;border-radius:9999px;background:var(--accent-dim);color:var(--accent);font-size:0.7rem;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;border:1px solid rgba(212,168,83,0.2);font-family:'JetBrains Mono',monospace;margin-bottom:1.5rem}
 .start-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s ease infinite}
@@ -241,6 +252,29 @@ body::before{
 .guarantee{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem;margin-bottom:1rem}
 .guarantee-icon{flex-shrink:0;width:24px;height:24px;color:var(--success);margin-top:1px}
 
+/* FAQ */
+.faq{margin-top:1.5rem}
+.faq-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--text-muted);letter-spacing:0.18em;text-transform:uppercase;margin-bottom:1rem}
+.faq-list{display:flex;flex-direction:column;gap:0.5rem}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.faq-q{display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem;cursor:pointer;touch-action:manipulation}
+.faq-q-text{font-size:0.85rem;font-weight:500;flex:1}
+.faq-icon{width:20px;height:20px;color:var(--text-muted);transition:transform 0.3s}
+.faq-item.open .faq-icon{transform:rotate(180deg)}
+.faq-a{display:none;padding:0 1rem 1rem;font-size:0.8rem;color:var(--text-secondary);line-height:1.5}
+.faq-item.open .faq-a{display:block}
+
+/* Urgência */
+.urgency{background:linear-gradient(135deg,rgba(212,168,83,0.1),rgba(199,80,80,0.1));border:1px solid var(--accent);border-radius:var(--radius);padding:1rem;margin-bottom:1rem;text-align:center}
+.urgency-label{font-size:0.65rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;font-weight:600;margin-bottom:0.25rem}
+.urgency-text{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400}
+.urgency-countdown{font-family:'JetBrains Mono',monospace;font-size:1.25rem;color:var(--accent);font-weight:600;margin-top:0.25rem}
+
+/* P.S. */
+.ps{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-top:1.5rem}
+.ps-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--accent);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.75rem}
+.ps-text{font-size:0.85rem;color:var(--text-secondary);line-height:1.6}
+
 /* Animations */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
 @keyframes fade-in{from{opacity:0}to{opacity:1}}
@@ -248,6 +282,7 @@ body::before{
 @keyframes fade-in-right{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 @keyframes scale-in{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
 @keyframes bounce-in{0%{transform:scale(0)}60%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(212,168,83,0.3)}50%{box-shadow:0 0 40px rgba(212,168,83,0.5)}}
 .anim-fade-in{animation:fade-in 0.3s ease-out}
 .anim-fade-up{animation:fade-in-up 0.4s ease-out}
 .anim-fade-right{animation:fade-in-right 0.3s ease-out}
@@ -348,7 +383,28 @@ body::before{
       <span class="start-badge-dot"></span> Diagnóstico Gratuito
     </div>
 
-    <h1 class="start-title anim-fade-up">Cansado de rolar a Netflix sem saber o que assistir?</h1>
+    <!-- Swipe Hero Carrossel -->
+    <div class="swipe-hero anim-fade-up" id="swipe-hero">
+      <div class="swipe-slides" id="swipe-slides">
+        <div class="swipe-slide">
+          <div class="swipe-hook">Você já perdeu <strong>4h este mês</strong> só escolhendo o que assistir?</div>
+          <div class="swipe-dor">A cada sessão, são 30 minutos rolando catálogo. Isso dá 4+ horas por mês. Tempo que você nunca mais recupera.</div>
+        </div>
+        <div class="swipe-slide">
+          <div class="swipe-hook">Você paga <strong>R$150/mês</strong> em streamings. Assiste quanto?</div>
+          <div class="swipe-dor">A maioria das pessoas assiste só 2-3 séries por mês. O resto do tempo é rolar catálogo sem encontrar nada bom.</div>
+        </div>
+        <div class="swipe-slide">
+          <div class="swipe-hook">Chega de dormir no <strong>meio do filme errado</strong></div>
+          <div class="swipe-dor">Escolher errado não é só perder tempo — é辜负 a sua noite. Você merece entretenimento que vale a pena.</div>
+        </div>
+      </div>
+      <div class="swipe-indicator">
+        <div class="swipe-dot active" data-slide="0"></div>
+        <div class="swipe-dot" data-slide="1"></div>
+        <div class="swipe-dot" data-slide="2"></div>
+      </div>
+    </div>
 
     <p class="start-subtitle anim-fade-up">
       <em>Seu perfil de cinema revela o filme perfeito em segundos.</em>
@@ -440,6 +496,12 @@ body::before{
       <p class="pricing-subtitle">Apenas recomendação profissional de filmes. Chega de perder tempo.</p>
     </div>
 
+    <div class="urgency">
+      <div class="urgency-label">Oferta especial</div>
+      <div class="urgency-text">Este desconto expira em</div>
+      <div class="urgency-countdown" id="urgency-countdown">12:00:00</div>
+    </div>
+
     <div class="offer-section" id="offer-features"></div>
     <div id="roi-display"></div>
     <div class="pains-label" style="margin-top:1.5rem">Escolha seu plano</div>
@@ -448,6 +510,18 @@ body::before{
     <button class="cta w-full" id="subscribe-btn" onclick="quiz.subscribe()" ontouchend="event.preventDefault();quiz.subscribe()">
       Assinar Agora <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
     </button>
+    <p style="text-align:center;color:var(--text-muted);font-size:0.7rem;margin-top:0.5rem">🔒 Pagamento 100% seguro. Dados criptografados.</p>
+
+    <div class="faq">
+      <div class="faq-label">Perguntas Frequentes</div>
+      <div class="faq-list" id="faq-list"></div>
+    </div>
+
+    <div class="ps">
+      <div class="ps-label">P.S.</div>
+      <div class="ps-text">Se você está aqui é porque já perdeu horas preciosas escolhendo filme. A primeira semana é por minha conta. Se não sentir que economizou tempo real, devolvemos seu dinheiro. Sem perguntas, sem burocracia.</div>
+    </div>
+  </div>
 
     <div class="guarantee" style="margin-top:1rem">
       <svg class="guarantee-icon" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -615,6 +689,15 @@ var PLANS = [
   { id:'monthly', name:'Mensal', price:'R$ 9,00', period:'/mês', popular:false, savings:'' },
   { id:'quarterly', name:'Trimestral', price:'R$ 24,00', period:'/3 meses', popular:true, savings:'Mais Popular' },
   { id:'annual', name:'Anual', price:'R$ 69,00', period:'/ano', popular:false, savings:'Melhor Custo-Benefício' }
+];
+
+var FAQ = [
+  { q:'Em quais streamings o MrCine funciona?', a:'O MrCine integra Netflix, Prime Video, Max, Disney+, Apple TV+ e mais. Você vê exatamente onde cada filme está disponível.' },
+  { q:'Funciona em smart TV?', a:'Sim! Acesse pelo navegador da TV (Samsung, LG, Android TV) ou casting para Chromecast e AirPlay.' },
+  { q:'Posso cancelar quando quiser?', a:'Totalmente. Sem fidelidade, sem multa. Cancele em 30 segundos pelo app ou email.' },
+  { q:'Quanto tempo leva para ver resultado?', a:'Na primeira semana você já economiza pelo menos 3 horas que gastaria escolhendo filme. E encontra filmes que nunca acharia sozinho.' },
+  { q:'É seguro colocar meu cartão?', a:'100% seguro. Pagamento processado por infraestrutura bancária certified PCI-DSS Level 1.' },
+  { q:'O app notifica quando chega filme novo?', a:'Sim! Você escolhe seus gêneros e diretores favoritos. O Oráculo te avisa quando algo imperdível entra no streaming.' }
 ];
 
 /* ====== HELPERS ====== */
@@ -910,6 +993,24 @@ goPricing: function(){
     });
     $('offer-features').innerHTML='<div class="offer-bar"></div>'+fh;
 
+    // FAQ
+    var faqHtml='';
+    FAQ.forEach(function(f,i){
+      faqHtml+='<div class="faq-item" data-idx="'+i+'"><div class="faq-q" onclick="quiz.toggleFaq('+i+')" ontouchend="event.preventDefault();quiz.toggleFaq('+i+')"><span class="faq-q-text">'+f.q+'</span><svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="faq-a">'+f.a+'</div></div>';
+    });
+    $('faq-list').innerHTML=faqHtml;
+
+    // Urgência countdown
+    var now=Date.now(),ends=now+12*60*60*1000,remaining=ends-now;
+    function updateCountdown(){
+      if(remaining<=0){ $('urgency-countdown').textContent='Oferta encerrada';return; }
+      var h=Math.floor(remaining/3600000),m=Math.floor((remaining%3600000)/60000),s=Math.floor((remaining%60000)/1000);
+      $('urgency-countdown').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      remaining-=1000;
+    }
+    updateCountdown();
+    setInterval(updateCountdown,1000);
+
     // Plans
     var self=this;
     var ph='';
@@ -927,6 +1028,11 @@ goPricing: function(){
   selectPlan: function(id){
     this.selectedPlan=id;
     this.renderPricing();
+  },
+
+  toggleFaq: function(idx){
+    var items=document.querySelectorAll('.faq-item');
+    items[idx].classList.toggle('open');
   },
 
   subscribe: function(){
@@ -955,6 +1061,27 @@ if(isInApp){
 } else {
   showScreen('screen-start');
 }
+
+// Swipe Hero Carrossel
+(function(){
+  var hero=$('swipe-hero'),slides=$('swipe-slides'),dots=document.querySelectorAll('.swipe-dot');
+  if(!hero||!slides) return;
+  var current=0,timer;
+  function goSlide(idx){
+    current=(idx+3)%3;
+    slides.style.transform='translateX(-'+(current*100)+'%)';
+    dots.forEach(function(d,i){ d.classList.toggle('active',i===current); });
+  }
+  function next(){ goSlide(current+1); }
+  function stop(){ clearInterval(timer); }
+  hero.addEventListener('mouseenter',stop);
+  hero.addEventListener('touchstart',stop);
+  dots.forEach(function(d,i){
+    d.style.cursor='pointer';
+    d.onclick=function(){ stop(); goSlide(i); };
+  });
+  timer=setInterval(next,3500);
+})();
 
 // Particles
 (function(){
